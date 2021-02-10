@@ -1,0 +1,27 @@
+set $bg #111111
+set $red #ac4142
+set $green #90a959
+set $yellow #f4bf75
+set $blue #6a9fb5
+set $purple #aa759f
+set $aqua #75b5aa
+set $gray #d0d0d0
+set $darkgray #505050
+
+
+client.focused          $blue $blue $darkgray $purple $blue
+client.focused_inactive $bg $bg $yellow $purple $bg
+client.unfocused        $bg $bg $yellow $purple $bg
+client.urgent           $red $red $white $red $red
+client.background       $blue
+
+bar {
+  colors {
+        background $bg
+        statusline $yellow
+        focused_workspace    $aqua $aqua $darkgray
+        inactive_workspace   $darkgray $darkgray $yellow
+        active_workspace     $darkgray $darkgray $yellow
+        urgent_workspace     $red $red $bg
+    }
+}
