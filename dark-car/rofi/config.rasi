@@ -1,0 +1,9 @@
+configuration {
+modi: "window,drun,run,ssh";
+width: 900;
+lines: 15;
+columns: 1;
+font: "Fira Code Medium 8";
+bw: 1;
+theme: "./dark.rasi";
+}
