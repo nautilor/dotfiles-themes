@@ -24,7 +24,7 @@
     background-color:            @background;
     active-background:           @background;
     red:                         #ac4142;
-    darkred:                     #ac4142;
+    darkred:                     #853234;
     green:                       #90a959;
     darkgreen:                   #758a47;
     yellow:                      #f4bf75;
