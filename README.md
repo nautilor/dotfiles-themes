@@ -28,4 +28,5 @@ This theme includes
 
 ## Screenshot
 
+![Dark Car](screenshots/dark-car_polyrofi.png)
 ![Dark Car](screenshots/dark-car.png)
