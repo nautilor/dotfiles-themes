@@ -24,7 +24,7 @@ alias la='ls -la'
 alias vim='nvim'
 
 # exports
-export EDITOR=vim
+export EDITOR=nvim
 export PATH=$HOME/.local/bin:$PATH
 
 export PS1="\h \[\e[35m\]::\[\e[m\] \[\e[32m\]\w\[$(tput sgr0)\]\[\e[m\] \[\033[33m\]\$(parse_git_branch)\[\033[00m\]\[\e[34m\]%\[\e[m\] "

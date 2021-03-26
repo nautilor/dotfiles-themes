@@ -8,7 +8,7 @@ super + ctrl + k
     mpdsong
 
 super + ctrl + l
-    alacritty -e ncmpcpp
+    urxvt -e ncmpcpp
 
 # date
 super + ctrl + s
@@ -44,7 +44,7 @@ super + Return
 	urxvt
 
 super + ctrl + Return
-    alacritty & sleep .1 && bspc node -t floating
+    urxvt & sleep .1 && bspc node -t floating
 
 ############### ROFI D MENU ###################
 super + d
