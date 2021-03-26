@@ -1,0 +1,6 @@
+! ------------------------------------------------------------------------------
+! Fonts
+! ------------------------------------------------------------------------------
+
+URxvt.font: xft:Fira Code:style=Regular:size=10
+!URxvt.font: xft:Fantasque Sans Mono:style=Medium:size=9

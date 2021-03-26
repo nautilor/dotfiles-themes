@@ -1,0 +1,103 @@
+#!/usr/bin/env python3
+
+import argparse
+from subprocess import Popen
+from scp import SCPClient
+import paramiko
+import getpass
+import keyring
+import zipfile
+import json
+import os
+
+BUILD = {}
+
+SHIP_COMMAND = "scp %s %s:%s"
+
+
+def define_args():
+    """ Define the arguments needed for the program to work """
+    args = argparse.ArgumentParser()
+    # This is the profile argument used to load the right configuration for the various operations
+    args.add_argument(
+        "-p",
+        "--profile",
+        metavar="<profile>",
+        required=True,
+        help="The profile to update",
+    )
+    return args.parse_args()
+
+
+def load():
+    """ Loads the configuration into the program based on the profile passed """
+    args = define_args()
+    profile: str = args.profile
+    global BUILD
+    with open(".deploy.json", "r") as rfile:
+        BUILD = json.load(rfile)
+        BUILD = BUILD[profile]
+
+
+def zip_it() -> str:
+    """ create a zip of the source code """
+    package = f"{BUILD['package']}.zip"
+    zipf = zipfile.ZipFile(package, "w", zipfile.ZIP_DEFLATED)
+    zipf.write(os.path.join(".", "__main__.py"))
+    for root, dirs, files in os.walk("root"):
+        for f in files:
+            print(root)
+            if not "__pycache__" in root:
+                zipf.write(os.path.join(root, f))
+    zipf.close()
+    print(f"** Done {package} **")
+    return package
+
+
+def connect():
+    """ Establish the ssh connection to the server using the configurations loaded """
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    password = getpass.getpass("password of ssh key: ")
+    print("Using " + BUILD["ssh"])
+    key = paramiko.RSAKey.from_private_key_file(BUILD["ssh"], password=password)
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(
+        hostname=BUILD["host"],
+        username=BUILD["username"],
+        look_for_keys=False,
+        allow_agent=False,
+        pkey=key,
+        timeout=5000,
+    )
+    scp = SCPClient(client.get_transport())
+    return scp, client
+
+
+def ship_it(package: str, scp, client) -> None:
+    """ Copy the file using scp to the folder in the server """
+    scp.put(package, BUILD["destination"])
+    print("** monving build to server **")
+
+
+def restart_it(scp, client) -> None:
+    """ Restart the systemd service on the remote server """
+    cmd = (
+        f"kill -9 `ps aux | grep {BUILD['package']}"
+        " | grep -v grep | awk '{print $2}'`"
+    )
+    print(f"** running {cmd} **")
+    client.exec_command(cmd)
+    cmd = f"sudo systemctl restart {BUILD['service']}"
+    print(f"** running {cmd} **")
+    client.exec_command(cmd)
+
+
+if __name__ == "__main__":
+    load()
+    package = zip_it()
+    scp, client = connect()
+    ship_it(package, scp, client)
+    restart_it(scp, client)
+    scp.close()
+    client.close()

@@ -1,0 +1,8 @@
+#!/bin/bash
+
+MENU=$(mpc lsplaylist | rofi -dmenu -p "Playlist")
+
+[[ -z "$MENU" ]] && exit
+mpc clear
+mpc load "$MENU"
+mpc play

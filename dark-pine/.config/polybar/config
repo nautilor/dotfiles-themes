@@ -1,0 +1,329 @@
+;
+; ██████╗  ██████╗ ██╗  ██╗   ██╗██████╗  █████╗ ██████╗        ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗ 
+; ██╔══██╗██╔═══██╗██║  ╚██╗ ██╔╝██╔══██╗██╔══██╗██╔══██╗      ██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝ 
+; ██████╔╝██║   ██║██║   ╚████╔╝ ██████╔╝███████║██████╔╝█████╗██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+; ██╔═══╝ ██║   ██║██║    ╚██╔╝  ██╔══██╗██╔══██║██╔══██╗╚════╝██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+; ██║     ╚██████╔╝███████╗██║   ██████╔╝██║  ██║██║  ██║      ╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+; ╚═╝      ╚═════╝ ╚══════╝╚═╝   ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝       ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝
+;
+
+[colors]
+red =         #a80d10
+darkred =     #8f0b0d
+green   =     #77a80d
+darkgreen =   #658f0b
+yellow =      #f59714
+darkyellow =  #db8712
+blue =        #1042c2
+darkblue =    #0b318f
+purple =      #ab0e81
+darkpurple =  #8f0b6c
+cyan =        #0eb599
+darkcyan =    #0c9c84
+foreground =  #d0d0d0
+background =  #333333
+transparent = #00000000
+
+
+; ================================ MEMORY USAGE ================================
+[module/memory]
+type = custom/script
+interval = 2
+format = <label>
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.purple}
+format-background = ${colors.background}
+exec = bar memory
+
+; ================================ CPU USAGE ================================
+[module/cpu]
+type = custom/script
+interval = 2
+format = <label>
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.blue}
+format-background = ${colors.background}
+exec = bar cpu
+
+; ================================ DATE AND TIME ================================
+[module/date]
+type = custom/script
+interval = 2
+format = <label>
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.green}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+exec = bar date
+
+
+; ================================ MOUSE ================================
+[module/mouse_battery]
+type = custom/script
+interval = 2
+format = <label>
+format-padding = 0
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.green}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+exec = bar mouse_battery
+
+; ================================ VOLUME ================================
+[module/volume]
+type = custom/script
+interval = 2
+format = <label>
+format-padding = 0
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.green}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+exec = bar volume
+
+; ================================ WINDOWS NAMES ================================
+[module/windows]
+type = custom/script
+interval = 0
+format = "<label> "
+format-padding = 0
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.darkcyan}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+exec = running_apps | xargs
+
+
+; ================================ NEXT SONG ================================
+[module/next]
+format-padding = 1
+type = custom/text
+content = ""
+tail = true
+format = <label>
+content-background = ${colors.zero}
+content-foreground = ${colors.seven}
+click-left = mpc next 
+
+
+; ================================ MPC SONG ================================
+[module/mpc]
+type = custom/script
+interval = 2
+format = <label>
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.blue}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+exec = bar mpd
+tail = true
+
+; ================================ KEYBOARD LAYOUT ================================
+[module/xkeyboard]
+type = internal/xkeyboard
+blacklist-0 = num lock
+format-prefix = "  "
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.red}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+label-layout = " %layout%"
+label-indicator-padding = 1
+label-indicator-foreground = ${colors.background}
+label-indicator-background = ${colors.red}
+
+; ================================ WORKSPACES ================================
+
+[module/workspaces]
+type = internal/xworkspaces
+pin-workspaces = false
+enable-click = true
+enable-scroll = true
+format-padding = 0
+
+icon-0 = 1;●
+icon-1 = 2;●
+icon-2 = 3;●
+icon-3 = 4;●
+icon-4 = 5;●
+icon-5 = 6;●
+icon-default = 
+
+format = <label-state>
+label-active = %icon%
+label-occupied = %icon%
+label-urgent = %icon%
+label-empty = ""
+
+label-occupied-padding = 2
+label-empty-padding = 2
+label-urgent-padding = 2
+label-active-padding = 2
+
+label-active-foreground = ${colors.background}
+label-urgent-foreground = ${colors.background}
+label-empty-foreground = ${colors.foreground}
+label-occupied-foreground = ${colors.foreground}
+
+label-active-background = ${colors.cyan}
+label-urgent-background = ${colors.darkred}
+label-empty-background = ${colors.background}
+label-occupied-background = ${colors.background}
+
+; ================================ I3 ================================
+[module/i3]
+type = internal/i3
+format = <label-state> <label-mode>
+index-sort = true
+wrapping-scroll = false
+
+ws-icon-0 = 1;○
+ws-icon-1 = 2;○
+ws-icon-2 = 3;○ 
+ws-icon-3 = 4;○
+ws-icon-4 = 5;○
+ws-icon-5 = 6;○
+ws-icon-6 = 7;○
+ws-icon-7 = 8;○
+ws-icon-8 = 9;○
+ws-icon-9 = 10;○
+ws-icon-default = ○
+
+label-mode-padding = 2
+label-mode-foreground = ${colors.foreground}
+label-mode-background = ${colors.cyan}
+label-visible-padding = 2
+
+label-background = ${colors.background}
+label-focused = ●
+label-focused-background = ${colors.cyan}
+label-focused-padding = 2
+
+label-unfocused =  %icon% 
+label-unfocused-foreground = ${colors.foreground}
+label-unfocused-background = ${colors.background}
+label-unfocused-padding = 2
+
+label-visible = %icon%
+
+label-urgent = %icon%
+label-urgent-background = ${colors.red}
+label-urgent-padding = 2
+
+; ================================ POWER BUTTON ================================
+
+[module/power]
+type = custom/menu
+label-separator = -
+label-separator-margin = 1
+label-open = " POWER "
+label-close = " CLOSE"
+
+format = <label-toggle> <menu>
+menu-0-0 = "  shutdown"
+menu-0-0-exec = poweroff
+menu-0-1 = "  restart "
+menu-0-1-exec = reboot
+format-prefix = "  " 
+format-prefix-foreground = ${colors.background}
+format-prefix-background = ${colors.red}
+format-background = ${colors.background}
+format-foreground = ${colors.foreground}
+
+; ================================ POWER MENU ================================
+
+[module/powermenu]
+type = custom/menu
+
+expand-right = true
+
+format-spacing = 1
+module-margin =  1
+label-open = 
+label-open-foreground = ${colors.two}
+label-close =  cancel
+label-close-foreground = ${colors.two}
+label-separator = |
+label-separator-foreground = ${colors.foreground}
+
+menu-0-0 = reboot
+menu-0-0-exec = menu-open-1
+menu-0-1 = power off
+menu-0-1-exec = menu-open-2
+
+menu-1-0 = cancel
+menu-1-0-exec = menu-open-0
+menu-1-1 = reboot
+menu-1-1-exec = sudo reboot
+
+menu-2-0 = power off
+menu-2-0-exec = sudo poweroff
+menu-2-1 = cancel
+menu-2-1-exec = menu-open-0
+
+[settings]
+screenchange-reload = true
+;compositing-background = xor
+;compositing-background = screen
+;compositing-foreground = source
+;compositing-border = over
+
+; ================================ BAR ================================
+
+[bar/dark]
+module-margin = 1
+bottom = false 
+offset-y = 0
+offset-x = 0
+width = 100%
+height = 26
+override-redirect = true
+fixed-center = true
+background = "#111"
+border-size = 5
+border-color = "#111"
+tray-position = right
+tray-padding = 2
+tray-background = ${colors.background}
+wm-restack = bspwm
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+cursor-click = pointer
+font-0 = Fira Code Medium:size=8:antialias=true:hinting=true:style=Medium;1
+font-1 = FontAwesome:pixelsize=10;2
+font-2 = Font Awesome 5 Free:pixelsize=8;0
+
+modules-left = windows
+modules-center = workspaces 
+modules-right = volume xkeyboard mpc date power
+
+[bar/bottom_dark]
+module-margin = 2
+bottom = true 
+offset-y = 0
+offset-x = 0
+width = 100%
+height = 24
+override-redirect = true
+fixed-center = true
+background = "#111111"
+border-size = 5
+border-color = "#333333"
+wm-restack = bspwm
+scroll-up = i3wm-wsnext
+scroll-down = i3wm-wsprev
+cursor-click = pointer
+font-0 = Fira Code Medium:size=8:antialias=true:hinting=true:style=Medium;1
+font-1 = FontAwesome:pixelsize=10;2
+font-2 = Font Awesome 5 Free Solid:pixelsize=10;2
+
+modules-left = volume cpu memory
+modules-center =  
+modules-right = xkeyboard mouse_battery

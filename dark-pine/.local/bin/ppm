@@ -1,0 +1,242 @@
+#!/usr/bin/env python3
+
+import argparse
+import os
+import pkg_resources as resources
+from subprocess import check_output, CalledProcessError, STDOUT
+from shutil import which, make_archive
+import stat
+import json
+
+DEP_FILE_NAME = "requirements.txt"
+
+
+def define_arguments():
+    args = argparse.ArgumentParser()
+    args.add_argument(
+        "-n", "--new", metavar="<name>", required=False, help="Create a new Project"
+    )
+    args.add_argument(
+        "-a", "--add", metavar="<dependecy>", required=False, help="Add a dependency"
+    )
+    args.add_argument(
+        "-r", "--run", action="store_true", required=False, help="Add a dependency"
+    )
+    args.add_argument(
+        "-i", "--install", action="store_true", required=False, help="Add a dependency"
+    )
+    args.add_argument(
+        "-x",
+        "--xarchive",
+        action="store_true",
+        required=False,
+        help="Create a runnable file",
+    )
+    args.add_argument(
+        "-s",
+        "--service",
+        action="store_true",
+        required=False,
+        help="Create a service file",
+    )
+    args.add_argument(
+        "-e",
+        "--environment",
+        action="store_true",
+        required=False,
+        help="Load Environment",
+    )
+    return args.parse_args()
+
+
+""" Create a new project
+        create folder named 'root'
+        create a file inside the folder named '__main__.py' with content of '#!/usr/bin/env python3'
+        create a file named 'requirements.txt'
+"""
+
+
+def create_new(project_name: str):
+    os.mkdir(project_name)
+    os.mkdir("{}/root".format(project_name))
+    os.mknod("{}/{}".format(project_name, DEP_FILE_NAME))
+    with open("{}/root/__main__.py".format(project_name), "w") as main_file:
+        """ python3 as a standard, python2 is dead """
+        main_file.write("#!/usr/bin/env python3\n")
+
+
+""" Check before installing a dependency
+        check if the file requirements.txt exists in current folder
+        check if the directory root exists in current folder
+        check if the file __main__.py exists in root folder
+"""
+
+
+def check_dependecy_files():
+    if not os.path.isfile(DEP_FILE_NAME):
+        print("missing {}".format(DEP_FILE_NAME))
+        exit(1)
+    if not os.path.isdir("root"):
+        print("wrong path project")
+        exit(1)
+    if not os.path.isfile("root/__main__.py"):
+        print("wrong path project")
+        exit(1)
+
+
+""" Append the depency to requirements.txt """
+
+
+def append_dependency(dependency: str):
+    with open(DEP_FILE_NAME) as f:
+        if dependency in f.read():
+            print("dependency already present")
+            exit(0)
+    with open(DEP_FILE_NAME, "a") as f:
+        f.write("{}\n".format(dependency))
+    exit(0)
+
+
+""" Check if pip is installed in the system """
+
+
+def check_pip():
+    if not which("pip"):
+        print("pip is not installed in the system")
+        exit(1)
+
+
+""" install a dependency """
+
+
+def install_package(dependency: str):
+    try:
+        FNULL = open(os.devnull, "w")
+        check_output(["pip", "install", dependency, "--user"])
+        FNULL.close()
+        return True
+    except CalledProcessError:
+        return False
+
+
+""" Add the dependecy
+        call check_pip()                -> for doc check the method
+        call check_dependency_files()   -> for doc check the method
+        check if the dependency is already installed
+        if is installed
+            call append_dependency()    -> for doc check the method
+        else
+            try to install the dependency
+            print an error message in case of error
+"""
+
+
+def add_dependency(dependency: str):
+    check_pip()
+    check_dependecy_files()
+    try:
+        resources.working_set.by_key[dependency]
+        print("package already installed")
+        append_dependency(dependency)
+        exit(0)
+    except KeyError:
+        if install_package(dependency):
+            add_dependency(dependency)
+        else:
+            print("unable to find package {}".format(dependency))
+
+
+""" Install dependecies
+        cycle the file 'requirements.txt' and install all dependencies of the project
+"""
+
+
+def install_dependencies():
+    check_dependecy_files()
+    with open(DEP_FILE_NAME, "r") as f:
+        packages = f.read()
+
+    packages = packages.split("\n")
+    packages = packages[:-1] if packages[-1] == "" else packages
+    for package in packages:
+        if install_package(package):
+            print("installed {}".format(package))
+        else:
+            print("unable to find {}".format(package))
+
+
+""" env the project """
+
+
+def env_variables():
+    try:
+        if os.path.isfile(".env.json"):
+            envs = json.load(open(".env.json", "r"))
+            for key in envs.keys():
+                os.system(f'export {key}="{envs[key]}"')
+                os.environ[key] = envs[key]
+    except Exception:
+        print("unable to start the program")
+
+
+""" run the project """
+
+
+def run_project():
+    try:
+        if os.path.isfile(".env.json"):
+            envs = json.load(open(".env.json", "r"))
+            for key in envs.keys():
+                os.environ[key] = envs[key]
+        os.environ["NODE_OPTIONS"] = "--max_old_space_size=1000"
+        if os.path.isfile("__main__.py"):
+            file = "__main__.py"
+        else:
+            file = "root/__main__.py"
+        os.system(f"nodemon -e py {file}")
+    except Exception:
+        print("unable to start the program")
+
+
+""" create a runnable file """
+
+
+def create_archive():
+    if not os.path.isdir("build"):
+        os.mkdir("build")
+    make_archive("build/build", "zip", "root/")
+    os.rename("build/build.zip", "build/build")
+    st = os.stat("build/build")
+    os.chmod("build/build", st.st_mode | stat.S_IEXEC)
+
+
+""" create a .service file based on the .env.json """
+
+
+def create_service():
+    ENVS = []
+    if os.path.isfile(".env.json"):
+        envs = json.load(open(".env.json", "r"))
+        for key in envs.keys():
+            key = f'Environemnt="{key}={envs[key]}"'
+            ENVS.append(key)
+            print(key)
+
+
+if __name__ == "__main__":
+    args = define_arguments()
+
+    if args.new:
+        create_new(args.new)
+    if args.add:
+        add_dependency(args.add)
+    if args.install:
+        install_dependencies()
+    if args.run:
+        run_project()
+    if args.xarchive:
+        create_archive()
+    if args.service:
+        create_service()
+    if args.environment:
+        env_variables()

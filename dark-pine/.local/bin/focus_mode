@@ -1,0 +1,12 @@
+#!/bin/bash
+
+MONITOR="DP-0"
+STATE=`xwininfo -name "polybar-dark_DP-0" | grep "Map State" | awk {'print $3'}`
+OPERATION=`[[ "$STATE" == "IsUnMapped" ]] && echo show || echo hide`
+PADDING=`[[ "$STATE" == "IsUnMapped" ]] && echo 35 || echo 0`
+GAPS=`[[ "$STATE" == "IsUnMapped" ]] && echo 10 || echo 0`
+BORDER=`[[ "$STATE" == "IsUnMapped" ]] && echo 5 || echo 0`
+xdo $OPERATION -p `pgrep polybar`
+bspc config window_gap $GAPS
+bspc config border_width $BORDER
+bspc config -m $MONITOR top_padding $PADDING

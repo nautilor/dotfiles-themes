@@ -1,0 +1,11 @@
+#!/bin/bash
+
+MEMORY=`free | grep Mem | awk '{ printf("%.0f%\n", $3/$2 * 100.0) }'`
+VOLUME=`pamixer --get-volume`
+DATE=`date '+%D %H:%M:%S'`
+CPU=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} {sub("\\..*", "", usage);} END {print usage "%"}')
+[[ "`mpc | wc -l`" == "3" ]] && MPD=`mpc | head -n1 | cut -c 1-30` || MPD=`echo "No Music Playing"`
+
+notify-send "$DATE
+$MPD...
+$VOLUME%"

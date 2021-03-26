@@ -1,0 +1,10 @@
+GREEN=$(echo -en '\033[00;32m')
+RESTORE=$(echo -en '\033[0m')
+
+echo -e "${GREEN}                 _   "
+echo -e "${GREEN}                | |  "
+echo -e "${GREEN} _ __ ___   ___ | |_ "
+echo -e "${GREEN}| '__/ _ \ / _ \| __|"
+echo -e "${GREEN}| | | (_) | (_) | |_ "
+echo -e "${GREEN}|_|  \___/ \___/ \__|"
+echo -e "${GREEN}Follow the white rabbit: ${RESTORE}"
